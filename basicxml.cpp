@@ -21,8 +21,6 @@ int basicxml::parse()
     element e;
     char *attstring = nullptr;
     int attslen = 0;
-    //attribute a;
-    //e.atts = &a;
 
     flags.doCallback = false;
 
@@ -36,8 +34,6 @@ int basicxml::parse()
             flags.lastIteration = true;
         }
 
-        //std::cout << "[" << size << "] \"" << std::string(buffer,size) << "\"" << std::endl;
-
         for (char *c = buffer; c != &buffer[size]; ++c)
         {
             if (flags.isInsideBrackets)
@@ -46,44 +42,12 @@ int basicxml::parse()
                 {
                     if (flags.isLoadingName)
                     {
-                        //e.name = strbuff;
-                        //e.namelen = &strbuff[strbuffit] - e.name + 1;
-                        //attslen = 0;
                         e.atts = nullptr;
-                        //parsecallback(e,userptr);
-                    }
-                    else if (flags.isLoadingAtts)
-                    {
-                        //e.atts->name = e.name;
-                        //e.atts->namelen = &strbuff[strbuffit] - (e.name + 1);
-                        //parse_attributes(nullptr,attstring,attslen,e);
-                    }
-
-                    //e.namelen++;
-                    //e.atts->namelen++;
-                    //strbuff[++strbuffit] = '\0';
-                    /*if (attstring != nullptr)
-                    {
-                        parse_attributes(nullptr,attstring,attslen,e);
-                    }
-                    else
-                    {
-                        e.atts = nullptr;
-                        parsecallback(e,userptr);
-                    }*/
-                
-                    //parsecallback(e,userptr);
-
-                    if ( !e.closing )
-                    {
-                        //flags.isLoadingVal = true;
-                        //e.value = &strbuff[strbuffit];
                     }
 
                     flags.isLoadingName = false;
                     flags.isLoadingAtts = false;
                     flags.isInsideBrackets = false;
-                    //e.closing = false;
                 }
 
                 else if (*c == '/')
@@ -93,19 +57,13 @@ int basicxml::parse()
 
                 else if ( whitespace(*c) && flags.isLoadingName )
                 {
-                    //e.name = c;
-                    //e.namelen = &strbuff[strbuffit] - e.name + 1;
-                    //strbuff[strbuffit] = '\0';
                     flags.isLoadingName = false;
-                    //flags.isLoadingAtts = false;
-                    //attslen = 0;
                 }
 
                 else
                 {
                     if ( !flags.isLoadingName && !flags.isLoadingAtts )
                     {
-                        //std::cout << "HERE HERE HERE" << std::endl;
                         strbuff[strbuffit++] = '\0';
                         attstring = &strbuff[strbuffit];
                         flags.isLoadingAtts = true;
@@ -177,27 +135,10 @@ int basicxml::parse()
                 {
                     flags.isLoadingVal = false;
                 }
-                
-                /*
-                if (flags.isLoadingVal)
-                {
-                    if ( whitespace(*c) )
-                    {
-                        flags.isLoadingVal = false;
-                        strbuff[strbuffit++] = ' ';
-                    }
-                    else
-                    {
-                        strbuff[strbuffit++] = *c;
-                    }
-
-                    ++e.valuelen;
-                }*/
             }
         }
     }
     
-    //*e.value = '\0';
     strbuff[strbuffit] = '\0';
     e.valuelen = 0;
     run_parsecallback(e,attstring,attslen);
@@ -260,20 +201,8 @@ void basicxml::parse_attributes(attribute *a, char *attstring, size_t length, el
             break;
         }
     } ++i;
-    //char name[equalsloc];
-    //char value[currentlen - equalsloc];
-
-    /*
-    newa.name = attstring;
-    newa.namelen = equalsloc;
-    newa.value = &attstring[equalsloc+1];
-    newa.valuelen = currentlen - (equalsloc+1);
-    newa.next = nullptr;
-    */
 
     newa.next = nullptr;
-
-    //std::cout << "HERHERHERHERHE" << std::string(attstring,length) << std::endl;
 
     if (a == nullptr)
     {
