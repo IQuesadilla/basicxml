@@ -1,5 +1,5 @@
 CXX = g++
-CFLAGS = -std=c++17 -fPIC -Wall
+CFLAGS = -std=c++17 -Wall -O3
 TESTFLAGS = -o $@ $^
 OBJFLAGS = -o $@ -c $<
 TARGET = basicxml.o
