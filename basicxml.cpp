@@ -198,6 +198,7 @@ int basicxml::parse()
     }
     
     //*e.value = '\0';
+    strbuff[strbuffit] = '\0';
     e.valuelen = 0;
     run_parsecallback(e,attstring,attslen);
 
