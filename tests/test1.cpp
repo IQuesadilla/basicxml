@@ -2,18 +2,16 @@
 #include <iostream>
 #include <fstream>
 
-typedef struct
+struct myptr
 {
     std::ifstream ifs;
     size_t index;
-} myptr;
+};
 
 class mybasicxml : public basicxml
 {
     void parsecallback(element e, void* userptr)
     {
-        //std::cout << "\"" << std::string(string,len) << "\"" << std::endl;
-        
         std::cout << "Callback:" << std::endl;
         std::cout << "Closing: " << ((e.closing) ? "true" : "false") << std::endl;
         std::cout << "Namelen: " << e.namelen << std::endl;
@@ -32,8 +30,6 @@ class mybasicxml : public basicxml
             std::cout << "Value: \"" << e.value << "\"" << std::endl;
         }
 
-        //for (size_t i = 0; i < e.namelen; ++i)
-        //    std::cout << "[" << e.name[i] << "]";
         std::cout << std::endl;
     }
 

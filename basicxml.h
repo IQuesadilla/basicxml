@@ -2,8 +2,8 @@
 #define BASICXML_H
 #pragma once
 typedef unsigned long size_t;
+typedef unsigned int uint;
 
-//struct attribute;
 struct attribute
 {
     char *name;
@@ -14,7 +14,7 @@ struct attribute
     attribute *next;
 };
 
-typedef struct
+struct element
 {
     char *name;
     size_t namelen;
@@ -24,7 +24,7 @@ typedef struct
     bool closing;
 
     attribute *atts;
-} element;
+};
 
 class basicxml
 {
@@ -49,6 +49,8 @@ private:
         bool isLoadingAtts : 1;
         bool isLoadingVal : 1;
         bool doCallback : 1;
+        bool isComment : 1;
+        uint findingComment : 2;
     } flags;
 
     virtual int loadcallback(char *, size_t, void *) = 0;

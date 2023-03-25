@@ -11,8 +11,7 @@ extern "C" void __cxa_pure_virtual()
 
 basicxml::basicxml()
 {
-    flags.isInsideBrackets = false;
-    flags.lastIteration = false;
+    ;
 }
 
 int basicxml::parse()
@@ -22,7 +21,11 @@ int basicxml::parse()
     char *attstring = nullptr;
     int attslen = 0;
 
+    flags.isInsideBrackets = false;
+    flags.lastIteration = false;
     flags.doCallback = false;
+    flags.findingComment = 0;
+    flags.isComment = 0;
 
     size_t strbuffit = 0;
     while (!flags.lastIteration)
@@ -79,32 +82,80 @@ int basicxml::parse()
             }
             else
             {
-                if (*c == '<')
+                if ( !flags.isComment )
                 {
-                    if (flags.doCallback)
+                    if ( *c == '<'  && flags.findingComment == 0 )
                     {
-                        if ( e.closing )
-                            e.valuelen = 0;
-                        
-                        strbuff[strbuffit] = '\0';
-
-                        run_parsecallback(e,attstring,attslen);
+                        flags.findingComment = 1;
                     }
 
-                    flags.isInsideBrackets = true;
-                    flags.isLoadingVal = false;
-                    flags.isLoadingName = true;
-                    flags.isLoadingAtts = false;
-                    flags.doCallback = true;
+                    else if( flags.findingComment > 0 )
+                    {
+                        if (*c == '!' && flags.findingComment == 1)
+                        {
+                            flags.findingComment = 2;
+                        }
 
-                    e.name = strbuff;
-                    e.namelen = 0;
-                    e.value = nullptr;
-                    e.valuelen = 0;
-                    e.closing = false;
-                    strbuffit = 0;
-                    attstring = nullptr;
-                    attslen = 0;
+                        else if (*c == '-' && flags.findingComment == 2)
+                        {
+                            flags.findingComment = 3;
+                        }
+
+                        else if (*c == '-' && flags.findingComment == 3)
+                        {
+                            flags.isComment = true;
+                            std::cout << "FOUND A COMMENT!" << std::endl;
+                        }
+
+                        else
+                        {
+                            if (flags.doCallback)
+                            {
+                                if ( e.closing )
+                                    e.valuelen = 0;
+                                
+                                strbuff[strbuffit] = '\0';
+
+                                run_parsecallback(e,attstring,attslen);
+                            }
+
+                            flags.isInsideBrackets = true;
+                            flags.isLoadingVal = false;
+                            flags.isLoadingName = true;
+                            flags.isLoadingAtts = false;
+                            flags.doCallback = true;
+
+                            e.name = strbuff;
+                            e.namelen = 0;
+                            e.value = nullptr;
+                            e.valuelen = 0;
+                            e.closing = false;
+                            strbuffit = 0;
+                            attstring = nullptr;
+                            attslen = 0;
+                            flags.findingComment = 0;
+                            --c;
+                        }
+                    }
+                }
+
+                else if ( flags.isComment )
+                {
+                    if ( *c == '-' && flags.findingComment == 3 )
+                    {
+                        flags.findingComment = 2;
+                    }
+
+                    else if ( *c == '-' && flags.findingComment == 2 )
+                    {
+                        flags.findingComment = 1;
+                    }
+
+                    else if ( *c == '>' && flags.findingComment == 1 )
+                    {
+                        flags.findingComment = 0;
+                        flags.isComment = false;
+                    }
                 }
 
                 else if ( !whitespace(*c) )
