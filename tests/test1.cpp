@@ -1,20 +1,12 @@
 #include "../basicxml.h"
-#include "iostream"
+#include <iostream>
+#include <fstream>
 
-const char xml[] = " \
-<db> \
-    <table val1=\"123\" val2=\"value\"> \
-        <column rows=\"int;float;string\"> \
-            <row> \
-                <int>7</int> \
-                <float>4.6</float> \
-                <string>   hey yo   </string> \
-                <db var=\"1\" /> \
-            </row> \
-        </column> \
-    </table> \
-</db> \
-";
+typedef struct
+{
+    std::ifstream ifs;
+    size_t index;
+} myptr;
 
 class mybasicxml : public basicxml
 {
@@ -47,27 +39,22 @@ class mybasicxml : public basicxml
 
     int loadcallback(char* buffer, size_t buffsize, void* ptr)
     {
-        size_t *index = (size_t*)ptr;
-        size_t count = buffsize;
+        auto myp = (myptr*)ptr;
 
-        if ( (sizeof(xml) - *index) < buffsize)
-        {
-            count = sizeof(xml) - *index;
-        }
-
-        for (size_t i = 0; i < count; ++i)
-            buffer[i] = xml[i + *index];
-
-        *index += count;
-        return count;
+        return myp->ifs.readsome(buffer, buffsize);
+        //return ;
     }
 };
 
 int main()
 {
     mybasicxml parser;
-    size_t index = 0;
-    parser.setUserPtr(&index);
+
+    myptr myp;
+    myp.index = 0;
+    myp.ifs.open("tests/test1.xml");
+
+    parser.setUserPtr(&myp);
     int ret = parser.parse();
     return ret;
 }
