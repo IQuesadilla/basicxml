@@ -104,7 +104,6 @@ int basicxml::parse()
                         else if (*c == '-' && flags.findingComment == 3)
                         {
                             flags.isComment = true;
-                            std::cout << "FOUND A COMMENT!" << std::endl;
                         }
 
                         else
