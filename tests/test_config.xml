@@ -1,0 +1,9 @@
+<config>
+    <showname enable="1" />
+    <showage enable="1" />
+</config>
+
+<data>
+    <name>Isaac Quezada</name>
+    <age>19</age>
+</data>

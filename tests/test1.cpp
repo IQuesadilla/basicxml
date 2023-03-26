@@ -2,18 +2,14 @@
 #include <iostream>
 #include <fstream>
 
-struct myptr
-{
-    std::ifstream ifs;
-    size_t index;
-};
-
 class mybasicxml : public basicxml
 {
-    void parsecallback(element e, void* userptr)
+public:
+    void parsecallback(element e)
     {
         std::cout << "Callback:" << std::endl;
-        std::cout << "Closing: " << ((e.closing) ? "true" : "false") << std::endl;
+        std::cout << "Closing: " << ((e.isClosing) ? "true" : "false") << std::endl;
+        std::cout << "Standalone: " << ((e.isStandalone) ? "true" : "false") << std::endl;
         std::cout << "Namelen: " << e.namelen << std::endl;
         std::cout << "Name: \"" << e.name << "\"" << std::endl;
         for (auto ptr = e.atts; ptr != nullptr; ptr = ptr->next)
@@ -33,24 +29,20 @@ class mybasicxml : public basicxml
         std::cout << std::endl;
     }
 
-    int loadcallback(char* buffer, size_t buffsize, void* ptr)
+    int loadcallback(char* buffer, size_t buffsize)
     {
-        auto myp = (myptr*)ptr;
-
-        return myp->ifs.readsome(buffer, buffsize);
-        //return ;
+        return ifs.readsome(buffer, buffsize);
     }
+
+    std::ifstream ifs;
 };
 
 int main()
 {
     mybasicxml parser;
 
-    myptr myp;
-    myp.index = 0;
-    myp.ifs.open("tests/test1.xml");
+    parser.ifs.open("tests/test1.xml");
 
-    parser.setUserPtr(&myp);
     int ret = parser.parse();
     return ret;
 }

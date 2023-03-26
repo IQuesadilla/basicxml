@@ -21,7 +21,8 @@ struct element
     char *value;
     size_t valuelen;
 
-    bool closing;
+    bool isClosing;
+    bool isStandalone;
 
     attribute *atts;
 };
@@ -34,11 +35,7 @@ public:
 
     int parse();
 
-    // void setLoadCallback(int (*callback)(char*,size_t,void*), void* userptr);
-    // void setParseCallback(void (*callback)(element,void*), void* userptr);
-    void setUserPtr(void *ptr);
-
-    static const size_t buffersize = 10;
+    size_t buffersize = 10;
 
 private:
     struct
@@ -53,19 +50,13 @@ private:
         uint findingComment : 2;
     } flags;
 
-    virtual int loadcallback(char *, size_t, void *) = 0;
-    virtual void parsecallback(element, void *) = 0;
+    virtual int loadcallback(char *, size_t) = 0;
+    virtual void parsecallback(element) = 0;
 
     void parse_attributes(attribute *a, char *attstring, size_t length, element e);
 
     void run_parsecallback(element e, char *attstring, size_t attslen);
     bool whitespace(char c);
-
-    // int (*loadcallback)(char*,size_t,void*);
-    // void* loadcallbackuserptr;
-    // void (*parsecallback)(element,void*);
-    // void* parsecallbackuserptr;
-    void *userptr;
 };
 
 #endif

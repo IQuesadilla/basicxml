@@ -31,7 +31,7 @@ int basicxml::parse()
     while (!flags.lastIteration)
     {
         char buffer[buffersize];
-        size_t size = loadcallback(buffer,buffersize,userptr);
+        size_t size = loadcallback(buffer,buffersize);
         if (size < buffersize)
         {
             flags.lastIteration = true;
@@ -55,7 +55,14 @@ int basicxml::parse()
 
                 else if (*c == '/')
                 {
-                    e.closing = true;
+                    if ( flags.isLoadingName )
+                    {
+                        e.isClosing = true;
+                    }
+                    else
+                    {
+                        e.isStandalone = true;
+                    }
                 }
 
                 else if ( whitespace(*c) && flags.isLoadingName )
@@ -110,7 +117,7 @@ int basicxml::parse()
                         {
                             if (flags.doCallback)
                             {
-                                if ( e.closing )
+                                if ( e.isClosing )
                                     e.valuelen = 0;
                                 
                                 strbuff[strbuffit] = '\0';
@@ -128,7 +135,8 @@ int basicxml::parse()
                             e.namelen = 0;
                             e.value = nullptr;
                             e.valuelen = 0;
-                            e.closing = false;
+                            e.isClosing = false;
+                            e.isStandalone = false;
                             strbuffit = 0;
                             attstring = nullptr;
                             attslen = 0;
@@ -196,11 +204,6 @@ int basicxml::parse()
     return 0;
 }
 
-void basicxml::setUserPtr(void *ptr)
-{
-    userptr = ptr;
-}
-
 void basicxml::parse_attributes(attribute *a, char *attstring, size_t length, element e)
 {
     size_t i = 0;
@@ -219,7 +222,7 @@ void basicxml::parse_attributes(attribute *a, char *attstring, size_t length, el
 
     if (lastit)
     {
-        parsecallback(e,userptr);
+        parsecallback(e);
         return;
     }
 
@@ -276,7 +279,7 @@ void basicxml::run_parsecallback(element e, char *attstring, size_t attslen)
 
     if ( attstring == nullptr )
     {
-        parsecallback(e,userptr);
+        parsecallback(e);
     }
     else
     {
