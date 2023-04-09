@@ -4,6 +4,6 @@
 </config>
 
 <data>
-    <name>Isaac Quezada</name>
-    <age>19</age>
+    <name>Isaac <!--ooh get split--> Quezada</name> <!-- Replace this with your name -->
+    <age>19</age> <!-- Replace this with your age -->
 </data>

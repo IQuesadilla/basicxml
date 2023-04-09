@@ -17,9 +17,9 @@ public:
                 {
                     for (auto ptr = e.atts; ptr != nullptr; ptr = ptr->next)
                     {
-                        if ( std::string(e.atts->name) == "enable" )
+                        if ( std::string(ptr->name) == "enable" )
                         {
-                            showName = std::stoi(e.atts->value);
+                            showName = std::stoi(ptr->value);
                         }
                     }
                 }
@@ -73,7 +73,18 @@ public:
 
     int loadcallback(char* buffer, size_t buffsize)
     {
-        return ifs.readsome(buffer, buffsize);
+        int s = ifs.readsome(buffer, buffsize);
+        return s;
+    }
+
+    mybasicxml()
+    {
+    loadingConfig = false;
+    loadingData = false;
+
+    showName = false;
+    showAge = false;
+
     }
 
     std::ifstream ifs;
@@ -102,8 +113,10 @@ int main()
 
     if ( parser.showAge )
     {
-        std::cout << "I am " << parser.myage << " years old." << std::endl;
+        std::cout << "I am " << parser.myage << " years old.";
     }
+    
+    std::cout << std::endl;
 
     return 0;
 }

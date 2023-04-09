@@ -2,12 +2,11 @@
 
 #include <iostream>
 
-#ifndef __cxa_pure_virtual
+#undef __cxa_pure_virtual
 extern "C" void __cxa_pure_virtual()
 {
     while(1);
 }
-#endif
 
 basicxml::basicxml()
 {
@@ -144,6 +143,34 @@ int basicxml::parse()
                             --c;
                         }
                     }
+                    else if ( !whitespace(*c) )
+                    {
+                        if (e.value == nullptr)
+                        {
+                            if (e.atts == nullptr)
+                                strbuff[strbuffit++] = '\0';
+
+                            e.value = &strbuff[strbuffit];
+                        }
+                        else
+                        {
+                            if (flags.isLoadingVal == false)
+                            {
+                                strbuff[strbuffit++] = ' ';
+                                ++e.valuelen;
+                            }
+                        }
+
+                        strbuff[strbuffit++] = *c;
+                        ++e.valuelen;
+
+                        flags.isLoadingVal = true;
+                    }
+
+                    else
+                    {
+                        flags.isLoadingVal = false;
+                    }
                 }
 
                 else if ( flags.isComment )
@@ -163,35 +190,6 @@ int basicxml::parse()
                         flags.findingComment = 0;
                         flags.isComment = false;
                     }
-                }
-
-                else if ( !whitespace(*c) )
-                {
-                    if (e.value == nullptr)
-                    {
-                        if (e.atts == nullptr)
-                            strbuff[strbuffit++] = '\0';
-
-                        e.value = &strbuff[strbuffit];
-                    }
-                    else
-                    {
-                        if (flags.isLoadingVal == false)
-                        {
-                            strbuff[strbuffit++] = ' ';
-                            ++e.valuelen;
-                        }
-                    }
-
-                    strbuff[strbuffit++] = *c;
-                    ++e.valuelen;
-
-                    flags.isLoadingVal = true;
-                }
-
-                else
-                {
-                    flags.isLoadingVal = false;
                 }
             }
         }
